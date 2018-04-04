@@ -1,0 +1,106 @@
+Talon srx super class 
+
+constuter 
+	make new talon srx 
+	input int fro talon id 
+
+configure talon 
+	set control mode 
+	pid controller true false and 
+	max and min outputs 
+	brake or coast mode 
+	invert motor 
+	
+	inputs 
+		control mode as a string 
+		pid kp ki kd 
+		ramp rate 
+		curernt limting items 
+		invert motor boolean 
+		
+encoder 
+	get ticks method
+		input srx to get ticks from 
+		output encoder ticks 
+	get velocity method 
+		input srx to get encoder data 
+			output velcotu in units/ second we can decide on units later :) 
+	reset encoders 
+	get acceloration method? might be helpful don't know how to do it 
+
+check amprage method
+	
+
+self test method 
+	check for stickey faults and post warning to dashboard when a sticky fault or others have occured 
+	print out a report with state srx is in 
+		sample code 
+			
+			 
+			StickyFaults _stickyFaults = new StickyFaults();
+
+			Faults _ faults = new Faults(); 
+			talon..get.....
+to do more digging into what methods worth adding or not
+
+
+
+
+
+
+how to build own libary in java 
+	https://www.programcreek.com/2011/07/build-a-java-library-for-yourself/
+
+
+
+to do implement 
+	own loose versions of wpilib pid output/ pid source for encoders class to do implment on own 
+
+	examples from this years robot code.
+
+public  class MyPosPidOutput implements PIDOutput {
+		// implements pid output
+		
+				public void pidWrite(double output) {
+					posOutput=output;
+				}
+
+	
+
+	
+
+	
+	
+public EncoderPIDSource(TalonSRX talon1,TalonSRX talon2) {
+			_frontLeft = talon1;
+			_frontRight = talon2;
+		}
+
+		public double pidGet() {
+			double fLGetSelected = _frontLeft.getSelectedSensorPosition(0);
+			double fRGetSelected = _frontRight.getSelectedSensorPosition(0);
+			double positionInches;
+
+			if(right) {
+				//(2 * Math.PI * Consts.wheelRadiusInch) make this a contant !!
+				positionInches = fRGetSelected * (double) (2 * Math.PI * Consts.wheelRadiusInch) / (double) Consts.ticksPerRotation ;
+				SmartDashboard.putString("Right", "Right calling");
+			}
+			else {
+				positionInches = fLGetSelected * (double) (2 * Math.PI * Consts.wheelRadiusInch) / (double) Consts.ticksPerRotation ;
+				SmartDashboard.putString("Left", "Left calling");
+			}
+
+	
+			return positionInches;
+		}
+
+		public PIDSourceType getPIDSourceType() {
+			return PIDSourceType.kDisplacement;
+		}
+
+		public void setPIDSourceType(PIDSourceType pidSource) {
+			
+		}
+	}
+}
