@@ -1,0 +1,55 @@
+CHAPTER 6 PID Control
+
+Feedforward
+	A known value supplied to the output as a guesstimate so the PID only has to make minor corrections.
+	PID Control lies at the heart of any advanced robotics motion. Essentially, it is a way of controlling something, i.e. a
+	wheel or an arm, using information gathered by the surroundings, In robotics, data is usually gathered through sensors,
+	like encoders, range sensors, light sensors, etc. Using this data, robots can determine how they should act.
+	Let’s say you have a cold room, like 10 degrees.  You want to warm it up to a nice 23 degrees (celsius).  Luckily you
+	have a heater.  You set it’s thermostat to 23, and it starts heating.  It heats as fast as it can, and quickly gets to 23
+	degrees.  It immediatly turns off.  However, the coils on the heater are still warm, and continue to heat the air for a
+	while after. The room heats up to 25, before the coils cool down, and the room loses heat to the environment. It dips
+	down to 23 degrees, and the heater turns on - but it takes time for the coils to turn on, and during this time the room
+	cools down to 21 degrees. This oscilliation around the set point slowly dies out, over a long period of time.
+	PID is designed to intelligently approach the target to reach it as quickly as possible.  So in this example, the heater
+	would have turned off before it hit 23, say at 21 degrees, such that it natrually warms up to 23.
+	In robotics, the same concept can be applied. Many teams use PID control to drive during autonomous, using encoders
+	as their sensor, shooting, using cameras as their sensor, or rotating, using gyros as their sensor.
+
+
+6.1  Proportional
+
+	Proportional control is using a predetermined constant (
+	kP)to control how much a mechanism can move. Every time
+	the PID code is run, the error is calculated, and the proportional gain is multiplied to this.  In the car analogy, lets
+	say the pressure you were applying was inversely proportional to the distance you were from the stop sign.
+	P =1/(error^2)and error is distance from the stop sign.  
+	Using this P value, we apply more pressure the closer we get, causing us to slow down.
+	Using only Proportional control can be done, and is usually better for slow moving mechanisms, or mechanisms where
+	you don’t need com
+6.2  Integral
+
+	When controlling a motor with just P, you may find that it oscillates. This happens because it has too much power when
+	it gets to the setpoint, and it overshoots.  Then when it tries to correct, it overshoots again, and this cycle continues.
+	One way to reduce this is to lower. This could have some bad side effects though. By reducing , your motor may not get all
+	the way to where you want it to. It may be off by a few degrees or rotations. To overcome this
+	steady-state error, an Integral gain is introduced. If you’ve taken calculus, you know the integral is the area under a curve or line. It’s the same with PID. The Integral
+	gain is the sum of all the past error. This means the gain will increase more and more the longer the motor isn’t where
+	it’s supposed to be. Even though this reduces steady state error, it may increase settling time. If you notice it oscillating a little bit before
+	settling, you may need a Derivate gain.
+
+6.3  Derivative
+
+	Derivative gain works by calculating the change in error. By finding this change, it can predict future system behavior,
+	and reduce settling time.  It does this by applying a brake more or less.  This can be useful if it is imperative that you
+	don’t overshoot.  This isn’t even used in the industry much, but if you find yourself with long settling times, it may
+	help to introduce a Derivative gain.
+6.4  Feed-Forward
+
+	If you have a motor that you know you want to run at 200 revolutions/minute, you
+	 could have the PID loop do your velocity control by itself.  But if you know that the motor needs to run at 200 revs/min, then it seems silly to require
+	the PID loop to take up all the slack, when you could just tell the motor to run at 200 revs/min, and then have the PID
+	loop make the fine adjustements for error. The F term does exactly that - it provides a constant output for velocity.
+	This fixes the issue that PID control is designed for position. For example, the closer to the setpoint the controller is,
+	the more it drops it’s output. This is from the P term and is designed so the controller slows down as it approaches the
+	target. However, with velocity control, you want to keep on running at a set speed, not slow down.

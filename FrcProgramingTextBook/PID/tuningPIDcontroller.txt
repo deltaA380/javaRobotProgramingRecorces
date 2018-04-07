@@ -1,0 +1,148 @@
+Tuning
+Tuning the PID Controller
+	The very nice thing about tuning a PID controller is that you don’t need to have a good
+	understanding of formal control theory to do a fairly good job of it. Ninety percent of
+	the closed-loop controller applications in the world do very well indeed with a controller
+	that is only tuned fairly well, so you’re in luck. I have received a number of emails from
+	people who have used the techniques described here and who were quite satisfied with
+	their results. These techniques don’t always work, of course: in some cases you need to
+	gain a deeper understanding of control system theory, such as you would get from my book
+	or from attending one of my longer seminars.
+	If you can, hook your system up to some test equipment, or write in some debug code to
+	allow you to look at the appropriate variables. If your system is slow enough you can just
+	spit the appropriate variables out on a serial port and graph them with a spreadsheet. If
+	you are tuning something motorized you may be able to just watch it’s behavior. Ideally,
+	you want to be able to look at the drive output and the plant output, to get graphs similar
+	to the ones earlier in this paper. In addition, you also want to apply a changing command—
+	preferably a square-wave—to your system. It is fairly easy to write some test code that will
+	generate a suitable test command.
+	Once you get the setup ready, set all gains to zero. If you suspect that you will not need differential
+	control (like the motor and gear example or the thermal system) then skip down
+	to the section that discusses tuning the proportional gain. Otherwise start by adjusting
+	your differential gain.
+Adjusting Derivative Gain
+	The way the controller is coded you cannot use derivative control alone. If you can, set
+	your proportional gain to a value that’s low enough to prevent oscillation, or at least so
+	that the system is oscillating much more slowly than you want it to react when it is tuned.
+	Check to see how the system works. If it oscillates with proportional gain you should
+	be able to cure it with differential gain. If it doesn’t oscillate, but it appears that the
+	proportional control term is working, consider yourself lucky.
+
+	Now put in some derivative gain. Start with about 100 times more derivative gain than
+	proportional gain. Watch your drive signal while you stimulate the system. If the system
+	oscillates under derivative control when it did not oscillate under proportional control
+	alone, or if the system oscillates much faster when you dial in some derivative gain, back
+	the derivative gain off by factors of two until it stops.
+	alone, or if the system oscillates much faster when you dial in some derivative gain, back
+	the derivative gain off by factors of two until it stops.
+	If you did not need to decrease the derivative gain to make the system stop oscillating,
+	start increasing it gain until you do see oscillation, excessive noise or excessive (more than
+	50%) overshoot on the drive or plant output. Note that the oscillation from too much
+	derivative gain is much faster than the oscillation from not enough, or from too much
+	proportional gain. I like to push the gain up until the system is on the verge of oscillation,
+	then back the gain off by a factor of 2 or 4. Make sure the drive signal still looks good. At
+	this point your system will probably be settling out very sluggishly, so its time to tune the
+	proportional and integral gains.
+Adjusting Proportional Gain
+	If you have nonzero derivative gain in your system, a good starting value for the proportional
+	gain is 1=100 of the derivative gain value. This may cause the system to oscillate, it
+	may leave the system very sluggish, but it should be a starting point.
+	If you are not using derivative action in the system, find a starting value for the proportional
+	gain. In most control systems, a gain of between 1 and 100 is a good point to start.
+	With this initial value your system will probably either show terribly slow performance or
+	it will oscillate.
+	Now that you have an initial guess for the proportional gain, see if you have oscillation.
+	If you see oscillation drop the proportional gain by factors of 8 or 10 until the oscillation
+	stops. If you don’t see oscillation, increase the proportional gain by factors of 8 or 10
+	until you start seeing oscillation or excessive overshoot. Once you are close, fine tune the
+	proportional gain by factors of two until you see oscillation, then back the gain off by a
+	factor of two or four.
+Adjusting Integrator Gain
+	Once you have your proportional gain set, start adjusting integral gain.
+	If you are using derivative gain, a good starting value for the integrator gain is to set it
+	smaller than the proportional gain by the same ratio as proportional gain to derivative
+	gain. For example, if you have a derivative gain of 1000 and a proportional gain of 10 (a
+	100:1 ratio), set the starting integrator gain to 0.1.
+	If you are not using derivative gain, a good starting value for the integrator gain will
+	be around 1=100 of the proportional gain. Try this gain. If you see oscillation, decrease
+	the integrator gain by steps of 8 or 10 until the oscillation goes away. If you don’t see
+		oscillation, increase the integrator gain by steps of 8 or ten until you do. From this point,If you did not need to decrease the derivative gain to make the system stop oscillating,
+	start increasing it gain until you do see oscillation, excessive noise or excessive (more than
+	50%) overshoot on the drive or plant output. Note that the oscillation from too much
+	derivative gain is much faster than the oscillation from not enough, or from too much
+	proportional gain. I like to push the gain up until the system is on the verge of oscillation,
+	then back the gain off by a factor of 2 or 4. Make sure the drive signal still looks good. At
+	this point your system will probably be settling out very sluggishly, so its time to tune the
+	proportional and integral gains.
+	try to find the gain where the system just breaks into oscillation, and then back the gainoff by a factor of 2 or 4.
+The hardest part
+	When you have gone through this sequence exactly once: find the derivative gain, find the
+	proportional gain, and then find the integrator gain, you must stop. Do not go back and
+	tweak the gains. Doing so is a very good way to fool yourself into thinking that you’ve
+	improved performance, while actually shoving the system into a corner of it’s operating
+	envelope that may well render it a “lab queen” that will only work under the best of
+	circumstances.
+	If you go through this adjustment procedure, and you stop, and you find that the performance
+	of your control loop is not sufficient to meet product requirements, then you need
+	to either use more advanced control loop design techniques (see [Wes06]), you need to
+	increase the underlying performance of the parts of your control loop, you need to hire a
+	control system expert to help you out, or some combination of the above.
+Other Issues
+Doing Math
+	I mentioned it in passing above, but you do not have to do your computations in floating
+	point. In fact, even at this writing (spring of 2016), you must pay a premium for processors
+	that can do fast double-precision floating point. Most embedded processors can do
+	integer arithmetic much faster than they can do floating point, and the tradeoff between
+	the development time to use fixed-point math, and the savings in processor loading, is
+	often a good one.
+	Unless you are working on a project with very critical performance parameters you can
+	often get by with control gains that are within a factor of two of the "correct" value. This
+	means that—if you are doing your computations with integer math—you can do all your
+	"multiplies" with shifts. With smaller processors that do not do multiplication in hardware,
+	this can lead to a dramatic decrease in the processor time taken for each iteration of the
+	control loop. This, in turn, will lead to a matching increase in performance, or a decrease
+	in processor performance requirements.
+	Determining Sampling Rates
+	So far I’ve only talked about sample rates in terms of how consistent they need to be,
+	but I haven’t told you how to decide ahead of time what the sample rate needs to be. If
+	your sampling rate is too low you may not be able to achieve the performance you want,
+	because of the added delay of the sampling. If your sampling rate is too high you will
+	create problems with noise in your differentiator and overflow in your integrator.
+Determining Sampling Rates
+	So far I’ve only talked about sample rates in terms of how consistent they need to be,
+	but I haven’t told you how to decide ahead of time what the sample rate needs to be. If
+	your sampling rate is too low you may not be able to achieve the performance you want,
+	because of the added delay of the sampling. If your sampling rate is too high you will
+	create problems with noise in your differentiator and overflow in your integrator.
+	The rule of thumb for digital control systems is that the sample time should be between
+	1/10th and 1/100th of the desired system settling time. System settling time is the amount
+	of time from the moment that the drive comes out of saturation until the control system
+	has effectively settled out. If you look at Figure 16, the controller comes out of saturation
+	at about 5.2 seconds, and has settled out at around 6.2 seconds. If you can live with the
+	one second settling time you could get away with a sampling rate as low as 10Hz.
+	You should treat the sampling rate as a flexible quantity. Anything that might make the
+	control problem more difficult would indicate that you should raise the sampling rate. Factors
+	such as having a difficult plant to control, or needing differential control, or needing
+	very precise control would all indicate raising the sampling rate. If you have a very easy
+	control problem you could get away with lowering the sampling rate somewhat (I would
+	hesitate to lower it below 5 times the frequency of interest). If you aren’t using a differentiator
+	and you are careful about using enough bits in your integrator you can get away
+	with sampling rates 1000 times faster than you intended settling time.
+Formal Math
+	An issue that I haven’t taken up is how to use formal control theory. to solve this sort of
+	control system design problem. The reason for this is twofold: one is because I promised
+	not to in the abstract; the other is because describing how to do this using formal theory
+	is a book-length work ([Wes06]).
+Conclusion
+	This covers the bare basics of implementing and tuning PID controllers in embedded systems.
+	With this information, you should be able to attack the next control problem that
+	comes your way and get it under control.
+	Tim
+
+https://www.youtube.com/watch?time_continue=19&v=uXnDwojRb1g
+	helpful video on pid tuning great for showing visuals of process 
+	
+
+	
+	
+	

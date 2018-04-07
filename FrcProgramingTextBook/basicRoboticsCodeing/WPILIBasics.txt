@@ -1,0 +1,95 @@
+
+2018 FRC Control SystemFRC Java Programming Basic WPILib Programming featuresWhat is WPILib
+What is WPILib
+
+	The WPI Robotics library (WPILib) is a set of software classes that interfaces with the hardware and software in your FRC robot’s control system. There are classes to handle sensors, motor speed controllers, the driver station, and a number of other utility functions such as timing and field management. In addition, WPILib supports many commonly used sensors that are not in the kit, such as ultrasonic rangefinders.
+	What's included in the library
+
+
+	There are three versions of the library, one for each supported language. This document specifically deals with the text-based languages, C++ and Java. 
+	There is considerable effort to keep the APIs for Java and C++ very similar with class names and method names being the same. 
+	There are some differences that reflect language differences such as pointers vs. references, name case conventions, and some minor differences in functionality. These languages were chosen because they represent a good level of abstraction, are used heavily in industry, and are often taught in High School and college courses.
+	 The WPI Robotics Library is designed for maximum extensibility and software reuse with these languages.
+
+	WPILib has a generalized set of features, such as general-purpose counters, to provide support for custom hardware and devices. The FPGA hardware also allows for interrupt processing to be dispatched at the task level, instead of as kernel interrupt handlers, reducing the complexity of many common real-time issues.
+
+	Fundamentally, C++ offers the highest performance possible for your robot programs (this only comes into effect with very tight timing or very CPU intensive processing). Java on the other hand has acceptable performance and includes extensive run-time checking of your program to make it much easier to debug and detect errors. 
+	Those with extensive programming experience can probably make their own choices, and beginning might do better with Java to take advantage of the ease of use.
+
+	There is a detailed list of the differences between C++ and Java on Wikipedia available here. Below is a summary of the differences that will most likely effect robot programs created with WPILib.
+	WPILib Documentation
+	WPILib Documentation
+
+Documentation for WPILib APIs for Java can be found here:
+
+
+
+Java: http://first.wpi.edu/FRC/roborio/release/docs/java 
+
+Source code for WPILib is not currently bundled with the Eclipse Plugins. 
+To browse the source code for WPILib online or for information about checking out the repository using GIT, see the "allwpilib" project on GitHub: https://github.com/wpilibsuite/allwpilib
+Java programming with WPILib
+
+Java
+
+public void autonomousInit() {
+     isAuto = true;
+     CommandBase.shooter.zeroRPMOffsets();
+ \    CommandBase.turret.zeroAngleOffsets();
+     // instantiate the command used for the autonomous period
+     autonomousCommand = (Command) (OI.getInstance().auton.getSelected());
+ \    // schedule the autonomous command (example)
+     autonomousCommand.start();
+}
+
+
+    Java objects must be allocated manually, but are freed automatically when no references remain.
+    References to objects instead of pointers are used. All objects must be allocated with the new operator and are referenced using the dot (.) operator (e.g. gyro.getAngle()).
+    Header files are not necessary and references are automatically resolved as the program is built.
+    Only single inheritance is supported, but interfaces are added to Java to get most of the benefits that multiple inheritance provides.
+    Checks for array subscripts out of bounds, uninitialized references to objects and other runtime errors that might occur in program development.
+    Compiles to byte code for a virtual machine, and must be interpreted.
+
+	
+What is the IterativeRobot base class  ?	
+
+	The IterativeRobot base class has methods that are periodically called each time new data arrives from the Driver Station. The idea is that for each mode that the robot is operating in (autonomous, teleop, or test) the appropriate periodic method is called where the program does a small amount of work. 
+	It is important not to have any long running code in the periodic methods such as loops or delays. Doing so could result in missing driver station updates that can negatively impact robot performance.
+	 Each period is approximately 20 milliseconds by can vary depending on CPU load on the roboRIO, the driver station laptop, or network traffic. If you require precise timing, for example to implement robot control algorithms it is not recommended and you should instead use TimedRobot (below) which has precise timing between periods.
+	 
+	 
+	 
+JavaIrativeRobot 
+
+public class RobotTemplate extends IterativeRobot {
+
+     public void robotInit() {
+
+     }
+
+     public void autonomousInit() {
+
+     }
+
+     public void autonomousPeriodic() {
+
+     }
+}
+
+
+The Iterative Robot base class assists with the most common code structure by handling the state transitions and looping in the base class instead of in the robot code. For each state (autonomous, teleop, disabled, test) there are two methods that are called:
+
+    INIT METHODS -
+		The init method for a given state is called each time the corresponding state is entered (for example, a transition from disabled to teleop will call teleopInit()). 
+		Any initialization code or resetting of variables between modes should be placed here.
+    PERIODIC METHODS - 
+		The periodic method for a given state is called each time the robot receives a Driver Station packet in the corresponding state, approximately every 20ms. 
+		This means that all of the code placed in each periodic method should finish executing in 20ms or less. 
+		The idea is to put code here that gets values from the driver station and updates the motors. You can read the joysticks and other Driver Station inputs more often, but you’ll only get the previous value until a new update is received. By synchronizing with the received updates your program will put less of a load on the roboRIO CPU leaving more time for other tasks such as camera processing.
+
+
+	 
+	 Source Used
+	 https://wpilib.screenstepslive.com/s/currentCS/m/java/l/599697-choosing-a-base-class
+	 
+	 

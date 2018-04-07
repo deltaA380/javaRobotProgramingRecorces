@@ -1,0 +1,62 @@
+
+	public class DifferentialDrive
+	extends RobotDriveBase
+
+A class for driving differential drive/skid-steer drive platforms such as the Kit of Parts drive base, "tank drive", or West Coast Drive.
+
+These drive bases typically have drop-center / skid-steer with two or more wheels per side (e.g., 6WD or 8WD). This class takes a SpeedController per side. 
+For four and six motor drivetrains, construct and pass in SpeedControllerGroup instances as follows.
+
+Four motor drivetrain:
+
+
+	 public class Robot {
+	   Spark m_frontLeft = new Spark(1);
+	   Spark m_rearLeft = new Spark(2);
+	   SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
+
+	   Spark m_frontRight = new Spark(3);
+	   Spark m_rearRight = new Spark(4);
+	   SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
+
+	   DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
+	 }
+ 
+
+Six motor drivetrain:
+
+
+	 public class Robot {
+	   Spark m_frontLeft = new Spark(1);
+	   Spark m_midLeft = new Spark(2);
+	   Spark m_rearLeft = new Spark(3);
+	   SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_midLeft, m_rearLeft);
+
+	   Spark m_frontRight = new Spark(4);
+	   Spark m_midRight = new Spark(5);
+	   Spark m_rearRight = new Spark(6);
+	   SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_midRight, m_rearRight);
+
+	   DifferentialDrive m_drive = new DifferentialDrive(m_left, m_right);
+	 }
+	 
+
+A differential drive robot has left and right wheels separated by an arbitrary width.
+
+Drive base diagram:
+
+ |_______|
+ | |   | |
+   |   |
+ |_|___|_|
+ |       |
+ 
+
+Each drive() function provides different inverse kinematic relations for a differential drive robot. 
+Motor outputs for the right side are negated, SO MOTOR DIRECTION INVERSION BY THE USER IS USUALLY UNNECESSARY.
+
+This library uses the NED axes convention (North-East-Down as external reference in the world frame): http://www.nuclearprojects.com/ins/images/axis_big.png.
+
+The positive X axis points ahead, the positive Y axis points right, and the positive Z axis points down. Rotations follow the right-hand rule, so clockwise rotation around the Z axis is positive.
+
+Inputs smaller then 0.02 will be set to 0, and larger values will be scaled so that the full range is still used. This deadband value can be changed with RobotDriveBase.setDeadband(double). 
