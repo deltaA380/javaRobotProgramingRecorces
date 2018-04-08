@@ -1,0 +1,15 @@
+analog presure sensor 
+	add code from powerup code 
+
+srx base class
+
+own pid controller class based off of wpilib pid controller ... 
+at least pid sourve and pid output class and interface 
+
+
+timer
+
+
+
+
+what packages for required building of libary 
